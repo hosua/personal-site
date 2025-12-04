@@ -1,11 +1,11 @@
 import { ThemeProvider } from "@/components/theme-provider";
 import GamesPage from "@/pages/GamesPage";
-import ThemeSwitcher from "./components/ThemeSwitcher";
+import NavBar from "./components/NavBar";
 
 function App() {
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-      <ThemeSwitcher />
+      <NavBar />
       <GamesPage />
     </ThemeProvider>
   );

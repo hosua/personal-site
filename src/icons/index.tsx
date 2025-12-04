@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useTheme } from "@/components/theme-provider";
 
 import { ReactComponent as GithubLightIcon } from "./github-light.svg";
@@ -6,7 +7,7 @@ import { ReactComponent as CppIcon } from "./cpp.svg";
 import { ReactComponent as PythonIcon } from "./python.svg";
 import { ReactComponent as JavascriptIcon } from "./javascript.svg";
 
-type IconName =
+export type IconName =
   | "github"
   | "cpp"
   | "c++"
@@ -21,11 +22,34 @@ interface CustomIconProps {
   height: number;
 }
 
-export const CustomIcon = ({ name, width, height }: CustomIconProps) => {
+const useResolvedTheme = () => {
   const { theme } = useTheme();
+  const [systemTheme, setSystemTheme] = useState<"dark" | "light">(() => {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  });
+
+  useEffect(() => {
+    if (theme === "system") {
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      const updateTheme = () => {
+        setSystemTheme(mediaQuery.matches ? "dark" : "light");
+      };
+      mediaQuery.addEventListener("change", updateTheme);
+      return () => mediaQuery.removeEventListener("change", updateTheme);
+    }
+  }, [theme]);
+
+  if (theme === "system") return systemTheme;
+  return theme;
+};
+
+export const CustomIcon = ({ name, width, height }: CustomIconProps) => {
+  const resolvedTheme = useResolvedTheme();
   switch (name) {
     case "github":
-      return theme === "dark" ? (
+      return resolvedTheme === "dark" ? (
         <GithubDarkIcon width={width} height={height} />
       ) : (
         <GithubLightIcon width={width} height={height} />

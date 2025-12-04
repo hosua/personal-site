@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import CustomIcon, { IconPreview } from "@/icons";
+import CustomIcon from "@/icons";
 
 const GameCard = () => {
   return (
@@ -20,13 +20,13 @@ const GameCard = () => {
           This is a cool description of a cool game.
         </CardDescription>
         <CardAction>
-          <Button>Play Now!</Button>
+          <CustomIcon name="github" width={32} height={32} />
         </CardAction>
       </CardHeader>
-      <CardContent>
-        <IconPreview />
-      </CardContent>
-      <CardFooter className="flex-col gap-2">Footer</CardFooter>
+      <CardContent></CardContent>
+      <CardFooter className="flex-col gap-2">
+        <Button>Play Now!</Button>
+      </CardFooter>
     </Card>
   );
 };
