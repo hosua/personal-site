@@ -46,9 +46,7 @@ export const GameCard = ({
       <Link to={to} className="block h-full">
         <CardHeader>
           <CardTitle>{title}</CardTitle>
-          <CardDescription>
-            {typeof description === "string" ? description : description}
-          </CardDescription>
+          <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardFooter className="text-primary font-medium group-hover:underline">
           Play Now →

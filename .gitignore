@@ -25,3 +25,5 @@ dist-ssr
 
 # Ignore game builds
 public/games/
+
+.env
