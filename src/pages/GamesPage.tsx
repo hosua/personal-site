@@ -9,7 +9,7 @@ export const GamesPage = () => {
           Games
         </h1>
         <p className="text-muted-foreground">
-          This page showcases some of the games I've made for fun and practice.
+          This page showcases some of the games I've made for fun.
         </p>
         <p className="text-muted-foreground">
           Some are more polished than others, but I'm proud of all of them and

@@ -1,3 +1,5 @@
+import { type ReactElement } from "react";
+import { Link } from "react-router-dom";
 import {
   Card,
   CardDescription,
@@ -5,13 +7,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "react-day-picker";
 
 import CustomIcon, { type IconName } from "@/icons";
 
 interface GameCardProps {
   to: string;
   title: string;
-  description: string;
+  description: string | ReactElement;
   githubUrl: string;
   languageIcon: IconName;
 }
@@ -34,14 +37,14 @@ export const GameCard = ({
         className="absolute top-4 right-4 z-10 p-2 rounded-md hover:bg-accent transition-colors"
         aria-label={`View ${title} on GitHub`}
       >
-        <CustomIcon name="github" width={32} height={32} />
+        <CustomIcon name="github" width={22} height={22} />
       </button>
       {languageIcon && (
         <div className="absolute bottom-4 right-4 z-10">
           <CustomIcon name={languageIcon} width={32} height={32} />
         </div>
       )}
-      <a href={to} className="block h-full">
+      <Link to={to} className="block h-full">
         <CardHeader>
           <CardTitle>{title}</CardTitle>
           <CardDescription>
@@ -51,7 +54,7 @@ export const GameCard = ({
         <CardFooter className="text-primary font-medium group-hover:underline">
           Play Now →
         </CardFooter>
-      </a>
+      </Link>
     </Card>
   );
 };
