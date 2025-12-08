@@ -37,9 +37,33 @@ jobs:
           echo "Rebuilding all games..."
           npm run clean-games
           npm run build-games
+          
+          echo "=== Verifying games in public/games ==="
+          ls -la public/games/ || echo "public/games/ not found!"
+          find public/games -type f -name "*.html" | head -10
 
           echo "Building react app..."
           npm run build
+          
+          echo "=== Verifying games in dist/games after Vite build ==="
+          ls -la dist/games/ || echo "dist/games/ not found!"
+          find dist/games -type f -name "*.html" | head -10
+          
+          echo "=== Ensuring Python games are in dist (manual copy if needed) ==="
+          if [ ! -d "dist/games/TetriPy" ] && [ -d "public/games/TetriPy" ]; then
+            echo "TetriPy not in dist, copying manually..."
+            mkdir -p dist/games
+            cp -r public/games/TetriPy dist/games/
+          fi
+          if [ ! -d "dist/games/FlapPy-bird" ] && [ -d "public/games/FlapPy-bird" ]; then
+            echo "FlapPy-bird not in dist, copying manually..."
+            mkdir -p dist/games
+            cp -r public/games/FlapPy-bird dist/games/
+          fi
+          
+          echo "=== Final verification before upload ==="
+          ls -la dist/games/
+          find dist/games -type f -name "*.html" | head -10
 
           echo "Uploading files to S3..."
           npm run deploy   
