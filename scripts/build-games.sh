@@ -18,7 +18,11 @@ echo Building TetriPy...
 pushd TetriPy || exit
 . init-venv.sh
 ./build-web.sh
-mv build/web/* "$BUILD_DIR"/TetriPy
+if [ -d "build/web" ]; then
+  cp -r build/web/* "$BUILD_DIR"/TetriPy/ 2>/dev/null || true
+  mkdir -p "$BUILD_DIR"/TetriPy
+  cp -r build/web/. "$BUILD_DIR"/TetriPy/
+fi
 deactivate
 popd || exit
 
@@ -26,7 +30,11 @@ echo Building FlapPy-bird...
 pushd FlapPy-bird || exit
 . init-venv.sh
 ./build-web.sh
-mv build/web/* "$BUILD_DIR"/FlapPy-bird
+if [ -d "build/web" ]; then
+  cp -r build/web/* "$BUILD_DIR"/FlapPy-bird/ 2>/dev/null || true
+  mkdir -p "$BUILD_DIR"/FlapPy-bird
+  cp -r build/web/. "$BUILD_DIR"/FlapPy-bird/
+fi
 deactivate
 popd || exit
 
