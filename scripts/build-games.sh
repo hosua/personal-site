@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e  # Exit on error
+set -e # Exit on error
 
 npm i
 npm run update-submodules
@@ -19,7 +19,13 @@ pushd "$GAMES_DIR" || exit
 echo Building TetriPy...
 pushd TetriPy || exit
 . init-venv.sh
-./build-web.sh
+echo "Running build-web.sh for TetriPy..."
+if ./build-web.sh; then
+  echo "build-web.sh completed successfully"
+else
+  echo "ERROR: build-web.sh failed with exit code $?"
+  exit 1
+fi
 echo "Checking if build/web exists..."
 if [ -d "build/web" ]; then
   echo "Copying TetriPy build files..."
@@ -29,15 +35,26 @@ if [ -d "build/web" ]; then
   ls -la "$BUILD_DIR"/TetriPy/web/ | head -10
 else
   echo "ERROR: build/web directory not found for TetriPy!"
+  echo "Current directory: $(pwd)"
+  echo "Contents of TetriPy directory:"
+  ls -la
+  echo "Checking for build directory:"
+  ls -la build/ 2>&1 || echo "build/ does not exist"
   exit 1
 fi
-deactivate
+deactivate || true
 popd || exit
 
 echo Building FlapPy-bird...
 pushd FlapPy-bird || exit
 . init-venv.sh
-./build-web.sh
+echo "Running build-web.sh for FlapPy-bird..."
+if ./build-web.sh; then
+  echo "build-web.sh completed successfully"
+else
+  echo "ERROR: build-web.sh failed with exit code $?"
+  exit 1
+fi
 echo "Checking if build/web exists..."
 if [ -d "build/web" ]; then
   echo "Copying FlapPy-bird build files..."
@@ -47,9 +64,14 @@ if [ -d "build/web" ]; then
   ls -la "$BUILD_DIR"/FlapPy-bird/web/ | head -10
 else
   echo "ERROR: build/web directory not found for FlapPy-bird!"
+  echo "Current directory: $(pwd)"
+  echo "Contents of FlapPy-bird directory:"
+  ls -la
+  echo "Checking for build directory:"
+  ls -la build/ 2>&1 || echo "build/ does not exist"
   exit 1
 fi
-deactivate
+deactivate || true
 popd || exit
 
 echo Building sdl2-pathfinder...
