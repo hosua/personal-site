@@ -13,7 +13,10 @@ export const handler = async (event) => {
 
   // TTL = 24 hours
   const current_time = Math.floor(new Date().getTime() / 1000);
-  const expire_at = Math.floor((new Date().getTime() + ttl) / 1000);
+  const expire_at =
+    ttl === 0
+      ? Number.MAX_SAFE_INTEGER
+      : Math.floor((new Date().getTime() + ttl) / 1000);
 
   const putItem = new PutCommand({
     TableName: table_name,
