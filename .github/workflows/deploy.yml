@@ -39,8 +39,8 @@ jobs:
 
       - name: Build all games
         run: |
-          echo "Setting up Emscripten environment..."
-          source ./emsdk/emsdk_env.sh
+          # echo "Setting up Emscripten environment..."
+          # source ./emsdk/emsdk_env.sh
           
           echo "Rebuilding all games..."
           npm run clean-games
