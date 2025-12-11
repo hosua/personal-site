@@ -41,9 +41,7 @@ jobs:
           npm run build-games
 
       - name: Tree check
-        run: |
-          sudo apt install tree
-          tree
+        run: tree -L 3
 
       - name: Build frontend
         run: |
