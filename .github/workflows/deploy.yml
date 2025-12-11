@@ -46,17 +46,19 @@ jobs:
           npm run clean-games
           npm run build-games
 
-      - name: Tree check
-        run: tree ./public -I node_modules
-
       - name: Build frontend
         run: |
           echo "Building react app..."
           npm run build
 
+      - name: Tree check
+        run: tree ./public -I node_modules
+
       - name: Deploy
         env:
           BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+          CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+
         run: | 
           echo "Deploying files to S3..."
           npm run deploy   
