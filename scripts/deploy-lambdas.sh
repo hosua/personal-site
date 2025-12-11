@@ -2,7 +2,9 @@
 
 set -e
 
-. .env
+if [ -f ".env" ]; then
+  . .env
+fi
 
 pushd lambdas || exit
 
