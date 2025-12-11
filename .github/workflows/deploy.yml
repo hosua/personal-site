@@ -7,7 +7,7 @@ on:
   #     - main
 
 jobs:
-  run_script:
+  build_and_deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,9 +28,16 @@ jobs:
           ./emsdk install latest
           ./emsdk activate latest
 
-      - name: Rebuild all games and deploy to S3
-        env:
-          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install Python dependencies
+        run: |
+          pip install pygame pygbag
+
+      - name: Build all games
         run: |
           echo "Setting up Emscripten environment..."
           source ./emsdk/emsdk_env.sh
@@ -39,10 +46,20 @@ jobs:
           npm run clean-games
           npm run build-games
 
+      - name: Build frontend
+        run: |
           echo "Building react app..."
           npm run build
 
-          echo "Uploading files to S3..."
+      - name: Tree check
+        run: tree ./public -I node_modules
+
+      - name: Deploy
+        env:
+          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+          CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+
+        run: | 
+          echo "Deploying files to S3..."
           npm run deploy   
-          
           echo "Done!"

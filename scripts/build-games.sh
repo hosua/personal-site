@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e  # Exit on error
+set -e # Exit on error
 
 npm i
 npm run update-submodules
@@ -18,38 +18,32 @@ pushd "$GAMES_DIR" || exit
 
 echo Building TetriPy...
 pushd TetriPy || exit
-. init-venv.sh
-./build-web.sh
-echo "Checking if build/web exists..."
-if [ -d "build/web" ]; then
-  echo "Copying TetriPy build files..."
-  mkdir -p "$BUILD_DIR"/TetriPy/web
-  cp -r build/web/. "$BUILD_DIR"/TetriPy/web/
-  echo "TetriPy files copied successfully"
-  ls -la "$BUILD_DIR"/TetriPy/web/ | head -10
-else
-  echo "ERROR: build/web directory not found for TetriPy!"
-  exit 1
+if ! pip list | grep -q pygbag; then
+  . init-venv.sh
+  VENV_ACTIVATED=1
 fi
-deactivate
+./build-web.sh
+mkdir -p "$BUILD_DIR"/TetriPy/web
+cp -r build/web/. "$BUILD_DIR"/TetriPy/web/
+if [ -n "$VENV_ACTIVATED" ]; then
+  deactivate
+  unset VENV_ACTIVATED
+fi
 popd || exit
 
 echo Building FlapPy-bird...
 pushd FlapPy-bird || exit
-. init-venv.sh
-./build-web.sh
-echo "Checking if build/web exists..."
-if [ -d "build/web" ]; then
-  echo "Copying FlapPy-bird build files..."
-  mkdir -p "$BUILD_DIR"/FlapPy-bird/web
-  cp -r build/web/. "$BUILD_DIR"/FlapPy-bird/web/
-  echo "FlapPy-bird files copied successfully"
-  ls -la "$BUILD_DIR"/FlapPy-bird/web/ | head -10
-else
-  echo "ERROR: build/web directory not found for FlapPy-bird!"
-  exit 1
+if ! pip list | grep -q pygbag; then
+  . init-venv.sh
+  VENV_ACTIVATED=1
 fi
-deactivate
+./build-web.sh
+mkdir -p "$BUILD_DIR"/FlapPy-bird/web
+cp -r build/web/. "$BUILD_DIR"/FlapPy-bird/web/
+if [ -n "$VENV_ACTIVATED" ]; then
+  deactivate
+  unset VENV_ACTIVATED
+fi
 popd || exit
 
 echo Building sdl2-pathfinder...

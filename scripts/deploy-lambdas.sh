@@ -6,6 +6,9 @@ set -e
 
 pushd lambdas || exit
 
+# Deploy url shortener lambdas
+pushd urlShortener || exit
+
 zip url_shortener.zip url_shortener.mjs
 zip get_url.zip get_url.mjs
 
@@ -32,3 +35,5 @@ aws lambda update-function-code \
     --no-cli-pager
 
 rm ./*.zip
+
+popd
