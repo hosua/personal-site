@@ -1,5 +1,10 @@
 import { API_BASE_URL } from "./api";
 
+interface ShortenUrlRequest {
+  originalUrl: string;
+  ttl: number;
+}
+
 interface ShortenUrlResponse {
   statusCode: number;
   short_url: string;
@@ -12,14 +17,14 @@ interface GetUrlResponse {
   expire_at: number;
 }
 
-export const shortenUrl = async ({ originalUrl }: { originalUrl: string }) => {
+export const shortenUrl = async ({ originalUrl, ttl }: ShortenUrlRequest) => {
   const url = `${API_BASE_URL}/url`;
   const response = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ original_url: originalUrl }),
+    body: JSON.stringify({ original_url: originalUrl, ttl }),
   });
 
   if (!response.ok) {

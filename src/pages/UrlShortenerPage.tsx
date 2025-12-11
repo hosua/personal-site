@@ -1,16 +1,21 @@
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Link2, CheckCircle2, Copy, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { shortenUrl } from "@/lib/urlShortener";
+import TimeDurationPicker from "@/components/TimeDurationPicker";
+import moment, { type Duration } from "moment";
+
+const MS_IN_DAY = 24 * 60 * 60 * 1000;
 
 export const UrlShortenerPage = () => {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [shortenedUrl, setShortenedUrl] = useState<string | null>(null);
+  const [expiration, setExpiration] = useState<Duration | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,7 +24,10 @@ export const UrlShortenerPage = () => {
     setLoading(true);
 
     try {
-      const response = await shortenUrl({ originalUrl: url });
+      // DynamoDB expects seconds for ttl but Date().getTime() returns ms, so
+      // we'll just use ms as input, then convert it to s in the Lambda.
+      const ttl = expiration ? expiration.asMilliseconds() : MS_IN_DAY;
+      const response = await shortenUrl({ originalUrl: url, ttl });
       const fullShortUrl = `${window.location.origin}/s/${response.short_url}`;
       setShortenedUrl(fullShortUrl);
       setUrl("");
@@ -51,12 +59,24 @@ export const UrlShortenerPage = () => {
         <p className="text-muted-foreground">
           Shorten your URLs quickly and easily.
         </p>
+        <p className="text-muted-foreground">
+          URLs with an expiration of 0 will never expire and you cannot set an
+          expiration greater than 5 years.
+        </p>
       </div>
-      <div className="max-w-2xl space-y-4">
+      <div className="mt-6">
+        <h2 className="text-xl font-semibold mb-4">Expiration Time</h2>
+        <TimeDurationPicker
+          onChange={useCallback((timeDuration) => {
+            setExpiration(moment.duration(timeDuration));
+          }, [])}
+        />
+      </div>
+      <div className="max-w-2xl space-y-4 mt-6">
         <form onSubmit={handleSubmit} className="flex gap-2">
           <Input
             type="url"
-            placeholder="Enter URL to shorten"
+            placeholder="Enter URL to shorten..."
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             className="flex-1"
@@ -93,7 +113,7 @@ export const UrlShortenerPage = () => {
             <Alert variant="default">
               <AlertTriangle className="text-yellow-600" />
               <AlertDescription>
-                Shortened URLs expire after 24 hours.
+                Shortened URLs will stop working when they expire!
               </AlertDescription>
             </Alert>
           </div>
