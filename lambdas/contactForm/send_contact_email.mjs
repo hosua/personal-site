@@ -12,10 +12,10 @@ const sesClient = new SESv2Client({});
 const dbClient = new DynamoDBClient({ region });
 const db = DynamoDBDocumentClient.from(dbClient);
 
-const SIX_HOURS_IN_MS = 6 * 60 * 60 * 1000;
+const TWO_HOURS_IN_MS = 2 * 60 * 60 * 1000;
 
 export const handler = async (event) => {
-  const { email, body, ip } = event.body || {};
+  const { email, body, ip } = JSON.parse(event.body || {});
 
   const getItem = new GetCommand({
     TableName: table_name,
@@ -48,7 +48,7 @@ export const handler = async (event) => {
 
     // Insert to recent senders table to prevent spam
     const expire_at = Math.floor(
-      (new Date().getTime() + SIX_HOURS_IN_MS) / 1000,
+      (new Date().getTime() + TWO_HOURS_IN_MS) / 1000,
     );
     const putItem = new PutCommand({
       TableName: table_name,
@@ -75,7 +75,7 @@ export const handler = async (event) => {
       },
       body: JSON.stringify({
         error:
-          "This IP address has sent an email recently, please wait 6 hours before sending another one!",
+          "This IP address has sent an email recently, please wait a few hours before sending another one.",
       }),
     };
   }

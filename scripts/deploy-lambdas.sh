@@ -57,3 +57,17 @@ aws lambda update-function-code \
 
 rm ./*.zip
 popd
+
+pushd contactForm || exit
+zip send_contact_email.zip send_contact_email.mjs
+aws lambda update-function-code \
+  --function-name "$LAMBDA_SEND_CONTACT_EMAIL" \
+  --zip-file fileb://send_contact_email.zip \
+  --no-cli-pager &&
+  aws lambda wait function-updated \
+    --function-name "$LAMBDA_SEND_CONTACT_EMAIL" &&
+  aws lambda publish-version \
+    --function-name "$LAMBDA_SEND_CONTACT_EMAIL" \
+    --no-cli-pager
+
+popd
