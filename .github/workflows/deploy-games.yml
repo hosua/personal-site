@@ -82,5 +82,5 @@ jobs:
 
         run: | 
           echo "Deploying games to S3..."
-          npm run deploy-games
+          npm run deploy:games
           echo "Done!"
