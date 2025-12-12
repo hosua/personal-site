@@ -75,3 +75,5 @@ aws lambda wait function-updated \
   aws lambda publish-version \
     --function-name "$LAMBDA_SEND_CONTACT_EMAIL" \
     --no-cli-pager
+
+echo "Finished uploading and publishing all lambdas!"
