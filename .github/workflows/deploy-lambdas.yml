@@ -24,4 +24,4 @@ jobs:
           LAMBDA_URL_SHORTENER: ${{ vars.LAMBDA_URL_SHORTENER }}
           LAMBDA_URL_SEND_CONTACT_EMAIL: ${{ vars.LAMBDA_URL_SEND_CONTACT_EMAIL }}
           LAMBDA_IP_VISITOR_COUNTER: ${{ vars.LAMBDA_IP_VISITOR_COUNTER }}
-        run: npm run deploy-lambdas
+        run: npm run deploy:lambdas
