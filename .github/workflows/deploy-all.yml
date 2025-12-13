@@ -1,10 +1,43 @@
-name: Build & Deploy Games
+name: Deploy All
 
 on:
   workflow_dispatch:
 
 jobs:
-  build_and_deploy:
+  deploy_frontend:
+    name: Deploy Frontend
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Build frontend
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+        run: |
+          echo "Building frontend..."
+          npm install
+          npm run build
+
+      - name: Deploy
+        env:
+          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+          CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+        run: |
+          echo "Deploying frontend to S3..."
+          npm run deploy:frontend
+          echo "Done!"
+
+  deploy_games:
+    name: Deploy Games
     runs-on: ubuntu-latest
 
     steps:
@@ -89,8 +122,32 @@ jobs:
         env:
           BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
           CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
-
-        run: | 
+        run: |
           echo "Deploying games to S3..."
           npm run deploy:games
           echo "Done!"
+
+  deploy_lambdas:
+    name: Deploy Lambdas
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy Lambdas
+        env: 
+          LAMBDA_GET_URL: ${{ vars.LAMBDA_GET_URL }}
+          LAMBDA_URL_SHORTENER: ${{ vars.LAMBDA_URL_SHORTENER }}
+          LAMBDA_SEND_CONTACT_EMAIL: ${{ vars.LAMBDA_SEND_CONTACT_EMAIL }}
+          LAMBDA_IP_VISITOR_COUNTER: ${{ vars.LAMBDA_IP_VISITOR_COUNTER }}
+        run: |
+          npm install
+          npm run deploy:lambdas
