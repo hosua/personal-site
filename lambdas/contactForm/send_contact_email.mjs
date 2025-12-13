@@ -24,8 +24,10 @@ export const handler = async (event) => {
     },
   });
   const { Item } = await db.send(getItem);
+  const now = Math.floor(new Date().getTime() / 1000);
+  const isExpired = Number(Item?.expire_at) < now;
 
-  if (!Item) {
+  if (!Item || isExpired) {
     const sendEmail = new SendEmailCommand({
       FromEmailAddress: from_email,
       Destination: {
@@ -67,17 +69,17 @@ export const handler = async (event) => {
       },
       body: JSON.stringify({ message: `Successfully sent email` }),
     };
-  } else {
-    // User recently sent an email, block the request
-    return {
-      statusCode: 420,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        error:
-          "This IP address has sent an email recently, please wait a few hours before sending another one.",
-      }),
-    };
   }
+
+  // User recently sent an email, block the request
+  return {
+    statusCode: 420,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      error:
+        "This IP address has sent an email recently, please wait a few hours before sending another one.",
+    }),
+  };
 };
